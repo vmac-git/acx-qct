@@ -3,189 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub de Links</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>LinkHub | Agregador Pro</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/vmacagnani/api-pre-os/raw/main/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0046ad;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
+        body { font-family: 'Inter', sans-serif; }
+        .bg-mesh {
+            background-color: #f8fafc;
+            background-image: radial-gradient(at 0% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%);
         }
-
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { color: var(--primary); margin-bottom: 5px; }
-
-        /* Controles: Busca e Refresh */
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
-
-        .search-box { flex-grow: 1; position: relative; }
-        .search-box input {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        .search-box i { position: absolute; left: 15px; top: 15px; color: #aaa; }
-
-        .btn-refresh {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-        }
-        .btn-refresh:hover { background: #003585; }
-
-        /* Grid de Cards */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid transparent;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .logo-box { height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
-        .logo-box img { max-height: 100%; max-width: 140px; }
-
-        .card h3 { margin: 10px 0; font-size: 1.1rem; color: var(--primary); }
-        .tag { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; background: #e9f0ff; color: var(--primary); padding: 5px 12px; border-radius: 20px; margin-top: auto; }
-
-        /* Loader */
-        .loader { 
-            display: none; 
-            width: 30px; height: 30px; 
-            border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); 
-            border-radius: 50%; animation: spin 1s linear infinite; 
-            margin: 20px auto; 
+        .loader-spin {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 10000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
     </style>
 </head>
-<body>
+<body class="bg-mesh min-h-screen text-slate-800 pb-20">
 
-<div class="container">
-    <header>
-        <h1>Hub de Aplicações</h1>
-        <p>Acesso rápido às nossas plataformas</p>
-    </header>
-
-    <div class="controls">
-        <div class="search-box">
-            <i class="fa fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Pesquisar por nome ou categoria..." onkeyup="filterCards()">
-        </div>
-        <button class="btn-refresh" onclick="loadData()">
-            <i class="fa fa-sync-alt"></i> Atualizar
-        </button>
+    <div id="loader-overlay">
+        <div class="loader-spin"></div>
+        <p class="mt-4 text-[10px] font-bold text-indigo-600 animate-pulse uppercase tracking-widest">Sincronizando Link...</p>
     </div>
 
-    <div id="loader" class="loader"></div>
-    <div id="app-grid" class="grid"></div>
-</div>
-
-<script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz6kx45bKx973iMsrI537AzjuuWWVCwqPDe3lsHw-9177hckLki0k31AjWxy-9a68rj/exec';
-    const LOGO_TOKEN = 'pk_Cp_VHfCSTQKbhfXfV2AZSw';
-    let rawData = [];
-
-    async function loadData() {
-        const grid = document.getElementById('app-grid');
-        const loader = document.getElementById('loader');
+    <div class="container mx-auto max-w-5xl p-6">
         
-        loader.style.display = 'block';
-        grid.style.opacity = '0.3';
+        <header class="text-center mt-12 mb-16">
+            <img src="https://raw.githubusercontent.com/avatek-m2m/apps-avatek/refs/heads/main/logo-avatek-azul-laranja.png" alt="Logo" class="mx-auto h-12 w-auto mb-6">
+            <h1 class="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">Link<span class="text-indigo-600">Hub</span></h1>
+            <p class="text-slate-400 text-sm font-medium italic mt-2 tracking-wide">Plataforma central de recursos e acessos. Versão usuários Avatek!</p>
+        </header>
 
-        try {
-            const response = await fetch(API_URL);
-            rawData = await response.json();
-            renderGrid(rawData);
-        } catch (err) {
-            console.error("Erro:", err);
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center;'>Erro ao conectar com a base de dados.</p>";
-        } finally {
-            loader.style.display = 'none';
-            grid.style.opacity = '1';
-        }
-    }
-
-    function renderGrid(items) {
-        const grid = document.getElementById('app-grid');
-        grid.innerHTML = '';
-
-        items.forEach(item => {
-            if(!item.URL) return;
-
-            // Extrai o domínio para o Logo.dev
-            let domain = "";
-            try {
-                domain = new URL(item.URL).hostname;
-            } catch(e) { domain = ""; }
-
-            const logoUrl = domain ? `https://img.logo.dev/${domain}?token=${LOGO_TOKEN}` : 'https://via.placeholder.com/70';
-
-            const card = document.createElement('a');
-            card.className = 'card';
-            card.href = item.URL;
-            card.target = '_blank';
-            card.innerHTML = `
-                <div class="logo-box">
-                    <img src="${logoUrl}" onerror="this.src='https://via.placeholder.com/70?text=App'" alt="Logo">
+        <div class="glass-card p-8 rounded-[2.5rem] shadow-sm mb-16 max-w-2xl mx-auto transition-all hover:shadow-md">
+            <h2 class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-6 text-center">Adicionar Novo Recurso</h2>
+            <form id="add-link-form" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Título do Link</label>
+                        <input type="text" id="link-title" name="title" placeholder="Ex: Painel de Controle" required 
+                               class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">URL (Endereço)</label>
+                        <input type="url" id="link-url" name="url" placeholder="https://..." required 
+                               class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
+                    </div>
                 </div>
-                <h3>${item.Description}</h3>
-                <span class="tag">${item.Type}</span>
-            `;
-            grid.appendChild(card);
-        });
-    }
+                <button type="submit" id="submit-button" class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all uppercase tracking-widest text-xs">
+                    Salvar na Base de Dados
+                </button>
+            </form>
+        </div>
 
-    function filterCards() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = rawData.filter(item => 
-            (item.Description && item.Description.toLowerCase().includes(query)) || 
-            (item.Type && item.Type.toLowerCase().includes(query))
-        );
-        renderGrid(filtered);
-    }
+        <div class="relative">
+            <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
+                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest italic">Recursos Catalogados</h2>
+                <div class="flex gap-4 items-center">
+                    <input type="text" id="searchInput" placeholder="Filtrar..." onkeyup="filterLinks()" class="bg-white/50 px-4 py-1.5 rounded-lg text-xs outline-none focus:ring-1 focus:ring-indigo-300 border border-slate-200">
+                    <button id="reload-button" class="p-2 hover:bg-white rounded-xl transition-all text-slate-400 hover:text-indigo-600 shadow-sm border border-transparent hover:border-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 2v6h-6"></path>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                            <path d="M3 22v-6h6"></path>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="loader" class="text-center py-20">
+                <div class="loader-spin mx-auto"></div>
+                <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acessando Nuvem...</p>
+            </div>
 
-    window.onload = loadData;
-</script>
+            <div id="links-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                </div>
 
+            <div id="empty-state" class="hidden text-center py-20 glass-card rounded-[2.5rem]">
+                <p class="text-slate-400 font-bold italic">Nenhum link encontrado.</p>
+                <p class="text-[10px] text-slate-300 uppercase mt-2 font-black tracking-widest">Use o formulário para adicionar.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const googleSheetWebAppUrl = 'https://script.google.com/macros/s/AKfycby3D6n6_18JzBTY15QSrF-olMuSYBiXS5YwzNZkPQW-xzAb8QTKlvK_082J7BVNtuXQ/exec';
+        const LOGO_TOKEN = 'pk_Cp_VHfCSTQKbhfXfV2AZSw';
+
+        const form = document.getElementById('add-link-form');
+        const linksContainer = document.getElementById('links-container');
+        const loader = document.getElementById('loader');
+        const overlay = document.getElementById('loader-overlay');
+        const emptyState = document.getElementById('empty-state');
+        const reloadButton = document.getElementById('reload-button');
+        
+        let allLinks = [];
+
+        function toggleOverlay(show) { overlay.style.display = show ? 'flex' : 'none'; }
+
+        function renderLinks(links) {
+            linksContainer.innerHTML = '';
+            if (!links || links.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                // Mantemos o reverse para ver os mais novos primeiro
+                [...links].reverse().forEach(link => {
+                    // Extração de domínio para o Logo.dev
+                    let domain = "";
+                    try { domain = new URL(link.url).hostname; } catch(e) { domain = "link"; }
+                    
+                    const logoSrc = `https://img.logo.dev/${domain}?token=${LOGO_TOKEN}`;
+
+                    const linkCard = `
+                        <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+                           class="group glass-card flex flex-col items-center justify-center p-6 rounded-[2rem] hover:shadow-[0_20px_40px_rgba(79,70,229,0.1)] hover:border-indigo-300 transition-all duration-300 aspect-square">
+                            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-300 shadow-sm border border-slate-100 overflow-hidden p-2">
+                                <img src="${logoSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(link.titulo || 'Link')}&background=4f46e5&color=fff'" alt="Logo" class="max-w-full max-h-full object-contain">
+                            </div>
+                            <h3 class="font-bold text-[10px] text-slate-800 uppercase tracking-tighter text-center leading-tight break-words w-full px-2">${link.titulo || link.url}</h3>
+                            <span class="text-[8px] text-slate-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity uppercase font-black tracking-widest">Acessar</span>
+                        </a>
+                    `;
+                    linksContainer.insertAdjacentHTML('beforeend', linkCard);
+                });
+            }
+        }
+
+        async function fetchLinks() {
+            loader.classList.remove('hidden');
+            linksContainer.innerHTML = '';
+            emptyState.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${googleSheetWebAppUrl}?cache_bust=${new Date().getTime()}`);
+                const data = await response.json();
+                allLinks = data.links;
+                renderLinks(allLinks);
+            } catch (error) {
+                console.error('Erro:', error);
+                linksContainer.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-[10px] py-10">Falha na Sincronização.</p>';
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function filterLinks() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allLinks.filter(l => 
+                (l.titulo && l.titulo.toLowerCase().includes(term)) || 
+                (l.url && l.url.toLowerCase().includes(term))
+            );
+            renderLinks(filtered);
+        }
+
+        async function addLink(event) {
+            event.preventDefault();
+            toggleOverlay(true);
+            const formData = new FormData(form);
+
+            try {
+                // Apps Script geralmente requer modo 'no-cors' para POST simples ou falha no retorno
+                // Mas vamos tentar o fetch padrão primeiro
+                await fetch(googleSheetWebAppUrl, { method: 'POST', body: formData });
+                
+                // Limpeza e recarregamento
+                form.reset();
+                setTimeout(fetchLinks, 1500); // Delay para o Google processar a escrita
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                form.reset();
+                fetchLinks();
+            } finally {
+                setTimeout(() => toggleOverlay(false), 1500);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchLinks);
+        form.addEventListener('submit', addLink);
+        reloadButton.addEventListener('click', fetchLinks);
+    </script>
 </body>
 </html>
