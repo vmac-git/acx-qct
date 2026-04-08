@@ -1,1 +1,163 @@
-Just a helo
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Links | Portfólio</title>
+    <style>
+        /* Estilização Baseada no Exemplo Avatek */
+        :root {
+            --primary-color: #0056b3;
+            --bg-color: #f0f2f5;
+            --card-white: #ffffff;
+            --text-dark: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Grid de Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-white);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+
+        .card img {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .tag {
+            background-color: #e7f0ff;
+            color: var(--primary-color);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: auto;
+        }
+
+        .loading-msg {
+            text-align: center;
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Meus Aplicativos</h1>
+            <p>Selecione uma das soluções abaixo para acessar</p>
+        </header>
+
+        <div id="links-grid" class="grid">
+            <p class="loading-msg">Carregando links...</p>
+        </div>
+    </div>
+
+    <script>
+        // SUBSTITUA PELA SUA URL DO GOOGLE APPS SCRIPT
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw5TltcB8I2zx5zGzsb2mp19zAsU3NU88zDuuCvKQeJE7qAvW4DKrkJESKSvdIAwFuL/exec';
+
+        async function fetchLinks() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const grid = document.getElementById('links-grid');
+                grid.innerHTML = ''; // Limpa o carregando
+
+                data.forEach(item => {
+                    // Ignora linhas sem URL
+                    if (!item.URL) return;
+
+                    const card = document.createElement('a');
+                    card.className = 'card';
+                    card.href = item.URL;
+                    card.target = '_blank';
+
+                    // Montagem do Card
+                    card.innerHTML = `
+                        <img src="${item.Logo || 'https://via.placeholder.com/85'}" alt="Logo">
+                        <h3>${item.Description}</h3>
+                        <p>${item.Type}</p>
+                        <span class="tag">${item.Type}</span>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                document.getElementById('links-grid').innerHTML = 
+                    '<p class="loading-msg">Erro ao carregar os dados. Verifique a URL da API.</p>';
+            }
+        }
+
+        // Inicia a busca ao carregar a página
+        window.onload = fetchLinks;
+    </script>
+</body>
+</html>
