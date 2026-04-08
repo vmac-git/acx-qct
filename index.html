@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkHub | LATAM team!</title>
+    <title>LinkHub | Acceleronix LATAM</title>
     <link rel="icon" type="image/x-icon" href="https://www.acceleronix.io/wp-content/uploads/2025/08/acc-favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .bg-mesh {
             background-color: #f8fafc;
             background-image: radial-gradient(at 0% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
@@ -35,9 +35,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.8);
             z-index: 10000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(2px);
         }
     </style>
@@ -54,7 +52,7 @@
         <header class="text-center mt-12 mb-16">
             <img src="https://www.acceleronix.io/wp-content/themes/acceleronix-en/images/logo.svg" alt="Logo" class="mx-auto h-12 w-auto mb-6">
             <h1 class="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">Link<span class="text-indigo-600">Hub</span></h1>
-            <p class="text-slate-400 text-sm font-medium italic mt-2 tracking-wide">Central resource and access platform. Acceleronix LATAM team version!</p>
+            <p class="text-slate-400 text-sm font-medium italic mt-2 tracking-wide">Acceleronix LATAM Team Central</p>
         </header>
 
         <div class="glass-card p-8 rounded-[2.5rem] shadow-sm mb-16 max-w-2xl mx-auto transition-all hover:shadow-md">
@@ -72,6 +70,11 @@
                                class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
                     </div>
                 </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Category (Type)</label>
+                    <input type="text" id="link-type" name="type" placeholder="Ex: Internal, Tools, Partners..." required 
+                           class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
+                </div>
                 <button type="submit" id="submit-button" class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all uppercase tracking-widest text-xs">
                     Commit to Database
                 </button>
@@ -80,15 +83,14 @@
 
         <div class="relative">
             <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
-                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest italic">Resources</h2>
+                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest italic">Resources Catalog</h2>
                 <div class="flex gap-4 items-center">
-                    <input type="text" id="searchInput" placeholder="Filtrar..." onkeyup="filterLinks()" class="bg-white/50 px-4 py-1.5 rounded-lg text-xs outline-none focus:ring-1 focus:ring-indigo-300 border border-slate-200">
-                    <button id="reload-button" class="p-2 hover:bg-white rounded-xl transition-all text-slate-400 hover:text-indigo-600 shadow-sm border border-transparent hover:border-slate-100">
+                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="filterLinks()" 
+                           class="bg-white/50 px-4 py-1.5 rounded-lg text-xs outline-none focus:ring-1 focus:ring-indigo-300 border border-slate-200">
+                    <button id="reload-button" class="p-2 hover:bg-white rounded-xl transition-all text-slate-400 hover:text-indigo-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M21 2v6h-6"></path>
-                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-                            <path d="M3 22v-6h6"></path>
-                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                            <path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                            <path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
                         </svg>
                     </button>
                 </div>
@@ -99,15 +101,12 @@
                 <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Connecting to Cloud...</p>
             </div>
 
-            <div id="links-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                </div>
+            <div id="sections-container" class="space-y-12"></div>
 
             <div id="empty-state" class="hidden text-center py-20 glass-card rounded-[2.5rem]">
                 <p class="text-slate-400 font-bold italic">No links detected.</p>
-                <p class="text-[10px] text-slate-300 uppercase mt-2 font-black tracking-widest">Use the form to add.</p>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -115,7 +114,7 @@
         const LOGO_TOKEN = 'pk_Cp_VHfCSTQKbhfXfV2AZSw';
 
         const form = document.getElementById('add-link-form');
-        const linksContainer = document.getElementById('links-container');
+        const sectionsContainer = document.getElementById('sections-container');
         const loader = document.getElementById('loader');
         const overlay = document.getElementById('loader-overlay');
         const emptyState = document.getElementById('empty-state');
@@ -126,37 +125,56 @@
         function toggleOverlay(show) { overlay.style.display = show ? 'flex' : 'none'; }
 
         function renderLinks(links) {
-            linksContainer.innerHTML = '';
+            sectionsContainer.innerHTML = '';
             if (!links || links.length === 0) {
                 emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                // Mantemos o reverse para ver os mais novos primeiro
-                [...links].reverse().forEach(link => {
-                    // Extração de domínio para o Logo.dev
-                    let domain = "";
-                    try { domain = new URL(link.url).hostname; } catch(e) { domain = "link"; }
-                    
-                    const logoSrc = `https://img.logo.dev/${domain}?token=${LOGO_TOKEN}`;
-
-                    const linkCard = `
-                        <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-                           class="group glass-card flex flex-col items-center justify-center p-6 rounded-[2rem] hover:shadow-[0_20px_40px_rgba(79,70,229,0.1)] hover:border-indigo-300 transition-all duration-300 aspect-square">
-                            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-300 shadow-sm border border-slate-100 overflow-hidden p-2">
-                                <img src="${logoSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(link.titulo || 'Link')}&background=4f46e5&color=fff'" alt="Logo" class="max-w-full max-h-full object-contain">
-                            </div>
-                            <h3 class="font-bold text-[10px] text-slate-800 uppercase tracking-tighter text-center leading-tight break-words w-full px-2">${link.titulo || link.url}</h3>
-                            <span class="text-[8px] text-slate-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity uppercase font-black tracking-widest">Acessar</span>
-                        </a>
-                    `;
-                    linksContainer.insertAdjacentHTML('beforeend', linkCard);
-                });
+                return;
             }
+            emptyState.classList.add('hidden');
+
+            // Agrupar por 'type'
+            const groups = links.reduce((acc, link) => {
+                const category = link.type || 'General';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(link);
+                return acc;
+            }, {});
+
+            // Ordenar categorias alfabeticamente
+            Object.keys(groups).sort().forEach(category => {
+                const section = document.createElement('div');
+                section.innerHTML = `
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
+                        ${category} <span class="h-[1px] bg-slate-200 flex-grow"></span>
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                        ${groups[category].map(link => {
+                            let domain = "";
+                            try { domain = new URL(link.url).hostname; } catch(e) { domain = "link"; }
+                            const logoSrc = `https://img.logo.dev/${domain}?token=${LOGO_TOKEN}`;
+                            
+                            return `
+                                <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+                                   class="group glass-card flex flex-col items-center justify-center p-6 rounded-[2rem] hover:shadow-[0_20px_40px_rgba(79,70,229,0.1)] hover:border-indigo-400 transition-all duration-500 aspect-square">
+                                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-slate-100 overflow-hidden p-2 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                        <img src="${logoSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(link.titulo || 'L')}&background=4f46e5&color=fff'" alt="Logo" class="max-w-full max-h-full object-contain">
+                                    </div>
+                                    <h3 class="font-bold text-[10px] text-slate-800 uppercase tracking-tighter text-center leading-tight break-words w-full px-2 group-hover:text-indigo-600 transition-colors">${link.titulo || 'Resource'}</h3>
+                                    <div class="mt-3 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                        <span class="text-[8px] bg-indigo-600 text-white px-3 py-1 rounded-full font-black tracking-widest uppercase">Open</span>
+                                    </div>
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                sectionsContainer.appendChild(section);
+            });
         }
 
         async function fetchLinks() {
             loader.classList.remove('hidden');
-            linksContainer.innerHTML = '';
+            sectionsContainer.innerHTML = '';
             emptyState.classList.add('hidden');
 
             try {
@@ -165,8 +183,8 @@
                 allLinks = data.links;
                 renderLinks(allLinks);
             } catch (error) {
-                console.error('Erro:', error);
-                linksContainer.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-[10px] py-10">Falha na Sincronização.</p>';
+                console.error('Error:', error);
+                sectionsContainer.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-[10px] py-10">Sync Failure.</p>';
             } finally {
                 loader.classList.add('hidden');
             }
@@ -176,7 +194,8 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allLinks.filter(l => 
                 (l.titulo && l.titulo.toLowerCase().includes(term)) || 
-                (l.url && l.url.toLowerCase().includes(term))
+                (l.url && l.url.toLowerCase().includes(term)) ||
+                (l.type && l.type.toLowerCase().includes(term))
             );
             renderLinks(filtered);
         }
@@ -187,15 +206,10 @@
             const formData = new FormData(form);
 
             try {
-                // Apps Script geralmente requer modo 'no-cors' para POST simples ou falha no retorno
-                // Mas vamos tentar o fetch padrão primeiro
                 await fetch(googleSheetWebAppUrl, { method: 'POST', body: formData });
-                
-                // Limpeza e recarregamento
                 form.reset();
-                setTimeout(fetchLinks, 1500); // Delay para o Google processar a escrita
+                setTimeout(fetchLinks, 1500);
             } catch (error) {
-                console.error('Erro ao salvar:', error);
                 form.reset();
                 fetchLinks();
             } finally {
