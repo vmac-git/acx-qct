@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkHub | Agregador Pro</title>
+    <title>LinkHub | LATAM team!</title>
     <link rel="icon" type="image/x-icon" href="https://www.acceleronix.io/wp-content/uploads/2025/08/acc-favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -46,7 +46,7 @@
 
     <div id="loader-overlay">
         <div class="loader-spin"></div>
-        <p class="mt-4 text-[10px] font-bold text-indigo-600 animate-pulse uppercase tracking-widest">Sincronizando Link...</p>
+        <p class="mt-4 text-[10px] font-bold text-indigo-600 animate-pulse uppercase tracking-widest">Synchronizing Link...</p>
     </div>
 
     <div class="container mx-auto max-w-5xl p-6">
@@ -58,29 +58,29 @@
         </header>
 
         <div class="glass-card p-8 rounded-[2.5rem] shadow-sm mb-16 max-w-2xl mx-auto transition-all hover:shadow-md">
-            <h2 class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-6 text-center">Adicionar Novo Recurso</h2>
+            <h2 class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-6 text-center">Add New Resource</h2>
             <form id="add-link-form" class="space-y-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-1">
-                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Título do Link</label>
-                        <input type="text" id="link-title" name="title" placeholder="Ex: Painel de Controle" required 
+                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Link Heading</label>
+                        <input type="text" id="link-title" name="title" placeholder="Ex: Control Panel" required 
                                class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">URL (Endereço)</label>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">URL (Address)</label>
                         <input type="url" id="link-url" name="url" placeholder="https://..." required 
                                class="bg-slate-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm border-none transition-all">
                     </div>
                 </div>
                 <button type="submit" id="submit-button" class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all uppercase tracking-widest text-xs">
-                    Salvar na Base de Dados
+                    Commit to Database
                 </button>
             </form>
         </div>
 
         <div class="relative">
             <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
-                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest italic">Recursos Catalogados</h2>
+                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest italic">Resources</h2>
                 <div class="flex gap-4 items-center">
                     <input type="text" id="searchInput" placeholder="Filtrar..." onkeyup="filterLinks()" class="bg-white/50 px-4 py-1.5 rounded-lg text-xs outline-none focus:ring-1 focus:ring-indigo-300 border border-slate-200">
                     <button id="reload-button" class="p-2 hover:bg-white rounded-xl transition-all text-slate-400 hover:text-indigo-600 shadow-sm border border-transparent hover:border-slate-100">
@@ -96,15 +96,15 @@
             
             <div id="loader" class="text-center py-20">
                 <div class="loader-spin mx-auto"></div>
-                <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acessando Nuvem...</p>
+                <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Connecting to Cloud...</p>
             </div>
 
             <div id="links-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 </div>
 
             <div id="empty-state" class="hidden text-center py-20 glass-card rounded-[2.5rem]">
-                <p class="text-slate-400 font-bold italic">Nenhum link encontrado.</p>
-                <p class="text-[10px] text-slate-300 uppercase mt-2 font-black tracking-widest">Use o formulário para adicionar.</p>
+                <p class="text-slate-400 font-bold italic">No links detected.</p>
+                <p class="text-[10px] text-slate-300 uppercase mt-2 font-black tracking-widest">Use the form to add.</p>
             </div>
         </div>
 
